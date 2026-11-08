@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>copypaste</title>
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7dff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='11' height='11' rx='3'/%3E%3Cpath d='M15 9V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v5a3 3 0 0 0 3 3h2'/%3E%3C/svg%3E">
+<script>
+(function(){try{var s=localStorage.getItem('cp-theme');var t=s?JSON.parse(s):(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}})();
+</script>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f5f5f2; --surface:#ffffff; --surface-2:#f1f1ed; --border:rgba(20,22,30,.10);
+  --text:#16181d; --muted:#6b7280;
+  --accent:#4f5bd5; --accent-hover:#434ec2; --accent-fg:#fff; --accent-soft:rgba(79,91,213,.14);
+  --ok:#16a34a; --ok-soft:rgba(22,163,74,.22); --warn:#d97706; --warn-soft:rgba(217,119,6,.22); --err:#dc2626; --err-soft:rgba(220,38,38,.2);
+  --glow:rgba(79,91,213,.13);
+  --shadow:0 1px 2px rgba(20,22,30,.04),0 10px 32px rgba(20,22,30,.07);
+  --mono:ui-monospace,"JetBrains Mono","SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0b0c0f; --surface:#14161b; --surface-2:#1c1f26; --border:rgba(255,255,255,.08);
+  --text:#e9ebef; --muted:#8a909c;
+  --accent:#7381ff; --accent-hover:#8793ff; --accent-fg:#0b0c0f; --accent-soft:rgba(115,129,255,.18);
+  --ok:#34d399; --ok-soft:rgba(52,211,153,.25); --warn:#fbbf24; --warn-soft:rgba(251,191,36,.25); --err:#f87171; --err-soft:rgba(248,113,113,.25);
+  --glow:rgba(115,129,255,.16);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:14px;font-weight:550;white-space:nowrap;transition:background .15s,border-color .15s,transform .06s,color .15s}
+.btn:hover{background:var(--surface-2)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:var(--accent-fg);border-color:transparent}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary.done,.btn-primary.done:hover{background:var(--ok)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn-ghost:hover{color:var(--text)}
+.icon-btn{width:40px;padding:0}
+.btn .i-ok{display:none}
+.btn.done .i-ok{display:block}
+.btn.done .i-main{display:none}
+
+/* ---------- home ---------- */
+#home{position:relative;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:24px;overflow:hidden}
+#home::before{content:"";position:absolute;left:50%;top:-18%;width:900px;max-width:140%;height:560px;transform:translateX(-50%);background:radial-gradient(50% 50% at 50% 50%,var(--glow),transparent 70%);pointer-events:none}
+.home-inner{position:relative;width:min(540px,100%);display:flex;flex-direction:column;align-items:center;gap:30px}
+.brand{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.logo{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);color:var(--accent)}
+.logo .i{width:28px;height:28px}
+h1{margin:0;font-size:34px;font-weight:650;letter-spacing:-.035em}
+.tagline{margin:8px 0 0;color:var(--muted)}
+.join{width:100%;display:flex;align-items:center;gap:6px;padding:8px 8px 8px 20px;border-radius:20px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+.join:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),var(--shadow)}
+.join.shake{animation:shake .35s}
+.join .hash{font-family:var(--mono);font-size:20px;color:var(--muted)}
+.join input{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--text);font:inherit;font-family:var(--mono);font-size:18px;padding:12px 4px}
+.join input::placeholder{color:var(--muted);opacity:.7}
+.join .go{width:48px;height:48px;border-radius:14px}
+.sub-actions{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+.recent{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.recent-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);width:100%;text-align:center}
+.chip{display:inline-flex;align-items:center;border-radius:999px;background:var(--surface);border:1px solid var(--border);overflow:hidden;transition:border-color .15s}
+.chip:hover{border-color:var(--accent)}
+.chip button{background:none;border:0;cursor:pointer;padding:6px 6px 6px 14px;font-family:var(--mono);font-size:13.5px}
+.chip .rm{padding:6px 10px 6px 4px;color:var(--muted);display:inline-flex;align-items:center}
+.chip .rm:hover{color:var(--err)}
+.chip .rm .i{width:14px;height:14px}
+.hint{margin:0;max-width:420px;text-align:center;color:var(--muted);font-size:13.5px}
+.corner{position:absolute;top:16px;right:16px}
+
+/* ---------- room ---------- */
+#room{height:100vh;height:100dvh;max-width:1320px;margin:0 auto;padding:14px clamp(12px,3vw,32px) clamp(12px,3vw,28px);display:flex;flex-direction:column;gap:12px}
+.topbar{display:flex;align-items:center;gap:8px}
+.room-title{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 14px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer;min-width:0;transition:background .15s,border-color .15s}
+.room-title:hover{background:var(--surface);border-color:var(--border)}
+.room-title .hash{color:var(--muted);font-family:var(--mono)}
+.room-title .name{font-family:var(--mono);font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-title .i{color:var(--muted);width:16px;height:16px}
+.spacer{flex:1}
+.status{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:999px;background:var(--surface);border:1px solid var(--border);font-size:13px;color:var(--muted);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.status[data-state=online] .dot{background:var(--ok);box-shadow:0 0 0 4px var(--ok-soft)}
+.status[data-state=connecting] .dot{background:var(--warn);box-shadow:0 0 0 4px var(--warn-soft);animation:pulse 1s ease-in-out infinite}
+.status[data-state=offline] .dot{background:var(--err);box-shadow:0 0 0 4px var(--err-soft);animation:pulse 1.2s ease-in-out infinite}
+.card{flex:1;min-height:0;display:flex;flex-direction:column;border-radius:22px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s,box-shadow .2s}
+.card:focus-within{border-color:var(--accent-soft)}
+.card.flash{animation:flash 1s ease-out}
+#buffer{flex:1;min-height:0;width:100%;resize:none;border:0;outline:0;background:transparent;color:var(--text);font-family:var(--mono);font-size:14.5px;line-height:1.65;padding:24px 26px;tab-size:4}
+#buffer::placeholder{color:var(--muted);opacity:.65}
+.footer{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;padding:10px 12px 10px 22px;border-top:1px solid var(--border)}
+.meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.actions{display:flex;align-items:center;gap:8px}
+.switch{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none;position:relative}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.track{width:32px;height:19px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);position:relative;transition:background .15s,border-color .15s;flex:none}
+.track::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--muted);transition:transform .18s,background .15s}
+.switch input:checked + .track{background:var(--accent);border-color:transparent}
+.switch input:checked + .track::after{transform:translateX(13px);background:var(--accent-fg)}
+.switch input:focus-visible + .track{outline:2px solid var(--accent);outline-offset:2px}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:30px;z-index:50;display:flex;align-items:center;gap:16px;max-width:calc(100% - 32px);padding:11px 18px;border-radius:999px;background:var(--text);color:var(--bg);font-size:14px;box-shadow:0 10px 40px rgba(0,0,0,.3);opacity:0;transform:translate(-50%,16px);pointer-events:none;transition:opacity .22s,transform .22s}
+#toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast button{background:none;border:0;padding:0;cursor:pointer;font-weight:650;text-decoration:underline;text-underline-offset:3px}
+
+@keyframes pulse{50%{opacity:.45}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes flash{0%{border-color:var(--accent);box-shadow:0 0 0 5px var(--accent-soft),var(--shadow)}100%{box-shadow:var(--shadow)}}
+@media (max-width:640px){
+  .status .label{display:none}
+  .status{padding:0 11px}
+  .footer{padding-left:16px}
+  .footer .actions{width:100%}
+  .footer .actions .btn-primary{flex:1}
+  #buffer{padding:18px}
+  h1{font-size:30px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="3"/><path d="M15 9V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v5a3 3 0 0 0 3 3h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+  <symbol id="i-dice" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+</svg>
+
+<!-- HOME -->
+<main id="home" class="view">
+  <button class="btn btn-ghost icon-btn corner theme-toggle" data-i18n-title="theme" aria-label="Theme">
+    <svg class="i i-sun"><use href="#i-sun"/></svg>
+  </button>
+  <div class="home-inner">
+    <div class="brand">
+      <div class="logo"><svg class="i"><use href="#i-copy"/></svg></div>
+      <div>
+        <h1>copypaste</h1>
+        <p class="tagline" data-i18n="tagline"></p>
+      </div>
+    </div>
+
+    <form class="join" id="joinForm" autocomplete="off">
+      <span class="hash">#</span>
+      <input id="roomInput" type="text" maxlength="64" spellcheck="false" autocapitalize="off" autocorrect="off" autofocus data-i18n-ph="roomPh" aria-label="Room name">
+      <button class="btn btn-primary icon-btn go" type="submit" data-i18n-title="join" aria-label="Join"><svg class="i"><use href="#i-right"/></svg></button>
+    </form>
+
+    <div class="sub-actions">
+      <button class="btn btn-ghost" id="randomBtn" type="button"><svg class="i"><use href="#i-dice"/></svg><span data-i18n="random"></span></button>
+      <div class="recent" id="recent" hidden></div>
+      <p class="hint" data-i18n="hint"></p>
+    </div>
+  </div>
+</main>
+
+<!-- ROOM -->
+<main id="room" class="view" hidden>
+  <header class="topbar">
+    <button class="btn btn-ghost icon-btn" id="backBtn" data-i18n-title="back" aria-label="Back"><svg class="i"><use href="#i-left"/></svg></button>
+    <button class="room-title" id="titleBtn" data-i18n-title="copyLink">
+      <span class="hash">#</span><span class="name" id="roomName"></span>
+      <svg class="i"><use href="#i-link"/></svg>
+    </button>
+    <div class="spacer"></div>
+    <div class="status" id="status" data-state="connecting" role="status"><span class="dot"></span><span class="label" id="statusLabel"></span></div>
+    <button class="btn btn-ghost icon-btn theme-toggle" data-i18n-title="theme" aria-label="Theme"><svg class="i i-sun"><use href="#i-sun"/></svg></button>
+  </header>
+
+  <section class="card" id="card">
+    <textarea id="buffer" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off" readonly></textarea>
+    <footer class="footer">
+      <div class="meta"><span id="stats"></span><span id="updated"></span></div>
+      <div class="spacer"></div>
+      <label class="switch" data-i18n-title="replaceTip"><input type="checkbox" id="replaceMode"><span class="track"></span><span data-i18n="replaceOnPaste"></span></label>
+      <div class="actions">
+        <button class="btn btn-ghost" id="clearBtn"><svg class="i"><use href="#i-trash"/></svg><span data-i18n="clear"></span></button>
+        <button class="btn btn-primary" id="copyBtn" data-i18n-title="copyTip">
+          <svg class="i i-main"><use href="#i-copy"/></svg><svg class="i i-ok"><use href="#i-check"/></svg>
+          <span id="copyLabel"></span>
+        </button>
+      </div>
+    </footer>
+  </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<noscript>JavaScript required.</noscript>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+/* ---------- i18n ---------- */
+const I18N = {
+  ru: {
+    tagline: 'Общий буфер обмена между машинами в реальном времени',
+    roomPh: 'название комнаты', join: 'Войти', random: 'Случайное имя', recent: 'Недавние', remove: 'Убрать',
+    hint: 'Откройте этот адрес на другой машине и введите то же имя. Если комнаты нет — она создастся сама.',
+    back: 'Все комнаты', copyLink: 'Скопировать ссылку на комнату', theme: 'Сменить тему',
+    taPh: 'Вставьте сюда текст: он мгновенно появится на всех устройствах в этой комнате',
+    copy: 'Скопировать', copied: 'Скопировано', copyTip: 'Скопировать всё (Alt+C)', clear: 'Очистить',
+    replaceOnPaste: 'Заменять при вставке', replaceTip: 'Ctrl+V заменяет весь текст, а не вставляет в место курсора',
+    stOnline: 'Онлайн', stConnecting: 'Подключение…', stOffline: 'Нет связи, переподключаюсь…',
+    created: 'Комната создана', nothing: 'Нечего копировать', copyFail: 'Не удалось скопировать: выделите текст и нажмите Ctrl+C',
+    linkCopied: 'Ссылка скопирована', cleared: 'Очищено', undo: 'Вернуть', updatedAt: 'Обновлено в ',
+    chars: 'симв.', lines: 'стр.',
+  },
+  en: {
+    tagline: 'A shared clipboard between your machines, in real time',
+    roomPh: 'room name', join: 'Join', random: 'Random name', recent: 'Recent', remove: 'Remove',
+    hint: 'Open this address on another machine and enter the same name. The room is created automatically.',
+    back: 'All rooms', copyLink: 'Copy room link', theme: 'Toggle theme',
+    taPh: 'Paste text here: it shows up instantly on every device in this room',
+    copy: 'Copy', copied: 'Copied', copyTip: 'Copy everything (Alt+C)', clear: 'Clear',
+    replaceOnPaste: 'Replace on paste', replaceTip: 'Ctrl+V replaces the whole text instead of inserting at the caret',
+    stOnline: 'Online', stConnecting: 'Connecting…', stOffline: 'Offline, reconnecting…',
+    created: 'Room created', nothing: 'Nothing to copy', copyFail: 'Copy failed: select the text and press Ctrl+C',
+    linkCopied: 'Link copied', cleared: 'Cleared', undo: 'Undo', updatedAt: 'Updated at ',
+    chars: 'chars', lines: 'lines',
+  },
+};
+const lang = (navigator.language || 'en').toLowerCase().startsWith('ru') ? 'ru' : 'en';
+const t = k => I18N[lang][k] ?? k;
+document.documentElement.lang = lang;
+document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+$('#copyLabel').textContent = t('copy');
+
+/* ---------- elements ---------- */
+const homeEl = $('#home'), roomEl = $('#room');
+const ta = $('#buffer'), card = $('#card');
+const statusEl = $('#status'), statusLabel = $('#statusLabel');
+const copyBtn = $('#copyBtn'), copyLabel = $('#copyLabel');
+const replaceToggle = $('#replaceMode');
+
+/* ---------- theme ---------- */
+function applyThemeIcon() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  document.querySelectorAll('.theme-toggle use').forEach(u => u.setAttribute('href', dark ? '#i-sun' : '#i-moon'));
+}
+document.querySelectorAll('.theme-toggle').forEach(b => b.addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  store.set('cp-theme', next);
+  applyThemeIcon();
+}));
+applyThemeIcon();
+
+/* ---------- toast ---------- */
+let toastTimer;
+const toastEl = $('#toast');
+function hideToast() { toastEl.classList.remove('show'); }
+function toast(msg, action) {
+  toastEl.textContent = '';
+  const span = document.createElement('span');
+  span.textContent = msg;
+  toastEl.append(span);
+  if (action) {
+    const b = document.createElement('button');
+    b.textContent = action.label;
+    b.addEventListener('click', () => { action.run(); hideToast(); });
+    toastEl.append(b);
+  }
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, action ? 5000 : 1900);
+}
+
+/* ---------- api ---------- */
+const API = '/api/v1/room';
+async function roomExists(name) {
+  const r = await fetch(`${API}/existence/${encodeURIComponent(name)}`);
+  if (!r.ok) throw new Error('http ' + r.status);
+  return (await r.json()).existence === true;
+}
+async function createRoom(name) {
+  const r = await fetch(`${API}/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ room_name: name }),
+  });
+  if (!r.ok && r.status !== 400) throw new Error('http ' + r.status); // 400 = already exists (race), fine
+  return r.ok;
+}
+const wsUrl = name => `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}${API}/ws/${encodeURIComponent(name)}`;
+
+/* ---------- names ---------- */
+const normalize = s => s.trim().toLowerCase().replace(/\s+/g, '-').replace(/[\/\\?#%]/g, '').slice(0, 64);
+const A = ['swift','calm','bright','quiet','brave','lucky','amber','cosmic','mellow','nimble','solar','velvet'];
+const N = ['otter','falcon','maple','comet','pixel','harbor','lynx','ember','willow','orbit','panda','delta'];
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const randomName = () => `${pick(A)}-${pick(N)}-${10 + Math.floor(Math.random() * 90)}`;
+const safeDecode = s => { try { return decodeURIComponent(s); } catch { return s; } };
+
+/* ---------- recent rooms ---------- */
+function getRecent() { const r = store.get('cp-recent', []); return Array.isArray(r) ? r : []; }
+function pushRecent(name) { store.set('cp-recent', [name, ...getRecent().filter(n => n !== name)].slice(0, 6)); }
+function renderRecent() {
+  const box = $('#recent'), list = getRecent();
+  box.textContent = '';
+  box.hidden = list.length === 0;
+  if (!list.length) return;
+  const label = document.createElement('div');
+  label.className = 'recent-label';
+  label.textContent = t('recent');
+  box.append(label);
+  list.forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    const open = document.createElement('button');
+    open.type = 'button'; open.textContent = name;
+    open.addEventListener('click', () => go(name));
+    const rm = document.createElement('button');
+    rm.type = 'button'; rm.className = 'rm'; rm.title = t('remove');
+    rm.innerHTML = '<svg class="i"><use href="#i-x"/></svg>';
+    rm.addEventListener('click', () => { store.set('cp-recent', getRecent().filter(n => n !== name)); renderRecent(); });
+    chip.append(open, rm);
+    box.append(chip);
+  });
+}
+
+/* ---------- navigation (hash routing: /#room-name) ---------- */
+function go(name) {
+  const n = normalize(name);
+  if (!n) {
+    const j = $('#joinForm');
+    j.classList.remove('shake'); void j.offsetWidth; j.classList.add('shake');
+    $('#roomInput').focus();
+    return;
+  }
+  location.hash = '#' + encodeURIComponent(n);
+}
+$('#joinForm').addEventListener('submit', e => { e.preventDefault(); go($('#roomInput').value); });
+$('#randomBtn').addEventListener('click', () => { const i = $('#roomInput'); i.value = randomName(); i.focus(); i.select(); });
+$('#backBtn').addEventListener('click', () => { location.hash = ''; });
+$('#titleBtn').addEventListener('click', async () => {
+  const ok = await copyText(location.href);
+  toast(ok ? t('linkCopied') : t('copyFail'));
+});
+
+/* ---------- room session ---------- */
+let session = 0, room = null, ws = null, retry = 0, retryTimer = null;
+let loaded = false;          // first content received for this session
+let unsent = false;          // local edits not yet sent to the server
+let sendTimer = null;
+let inflight = [];           // values we sent and expect to see echoed back
+
+function setStatus(state) {
+  statusEl.dataset.state = state;
+  const label = { online: t('stOnline'), connecting: t('stConnecting'), offline: t('stOffline') }[state];
+  statusLabel.textContent = label;
+  statusEl.title = label;
+}
+function updatePlaceholder() { ta.placeholder = loaded ? t('taPh') : t('stConnecting'); }
+
+function closeSocket() {
+  clearTimeout(retryTimer); clearTimeout(sendTimer);
+  if (ws) { ws.onopen = ws.onmessage = ws.onclose = ws.onerror = null; try { ws.close(); } catch {} ws = null; }
+  inflight = [];
+}
+
+function showView(which) {
+  homeEl.hidden = which !== 'home';
+  roomEl.hidden = which !== 'room';
+}
+
+async function connect(my) {
+  if (my !== session) return;
+  setStatus(retry === 0 ? 'connecting' : 'offline');
+  try {
+    if (!(await roomExists(room))) {
+      await createRoom(room);
+      if (my !== session) return;
+      toast(t('created'));
+    }
+  } catch {
+    return scheduleReconnect(my);
+  }
+  if (my !== session) return;
+
+  const sock = new WebSocket(wsUrl(room));
+  ws = sock;
+  sock.onopen = () => { retry = 0; setStatus('online'); };
+  sock.onmessage = ev => {
+    let m; try { m = JSON.parse(ev.data); } catch { return; }
+    if (typeof m.content === 'string' && !('event_type' in m)) return onInitial(m.content);
+    if (m.event_type === 'update_content' && typeof m.new_content === 'string') onRemote(m.new_content);
+  };
+  sock.onclose = () => {
+    if (my !== session) return;
+    inflight = [];
+    setStatus('offline');
+    scheduleReconnect(my);
+  };
+  sock.onerror = () => {};
+}
+
+function scheduleReconnect(my) {
+  if (my !== session) return;
+  setStatus('offline');
+  clearTimeout(retryTimer);
+  const delay = Math.min(600 * 2 ** retry, 8000);
+  retry++;
+  retryTimer = setTimeout(() => connect(my), delay);
+}
+
+function kickReconnect() {
+  if (!room || (ws && ws.readyState <= 1)) return;
+  clearTimeout(retryTimer);
+  connect(session);
+}
+window.addEventListener('online', kickReconnect);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) kickReconnect(); });
+
+function enterRoom(name) {
+  closeSocket();
+  const my = ++session;
+  room = name; retry = 0; loaded = false; unsent = false;
+  ta.value = ''; ta.readOnly = true;
+  $('#roomName').textContent = name;
+  $('#updated').textContent = '';
+  document.title = `# ${name} · copypaste`;
+  updatePlaceholder(); updateStats();
+  showView('room');
+  connect(my);
+}
+
+function leaveRoom() {
+  closeSocket();
+  session++; room = null; loaded = false;
+  document.title = 'copypaste';
+  showView('home');
+  renderRecent();
+  const i = $('#roomInput');
+  i.focus();
+}
+
+function route() {
+  const name = normalize(safeDecode(location.hash.slice(1)));
+  if (name) enterRoom(name); else leaveRoom();
+}
+window.addEventListener('hashchange', route);
+
+/* ---------- sync ---------- */
+function onInitial(text) {
+  loaded = true;
+  ta.readOnly = false;
+  updatePlaceholder();
+  pushRecent(room);
+  if (unsent) { flush(); }              // we have offline edits: they win
+  else { applyRemote(text, false); }
+  if (matchMedia('(hover:hover)').matches) ta.focus();
+}
+
+function onRemote(text) {
+  if (inflight.length && inflight[0] === text) { inflight.shift(); return; } // echo of our own update
+  if (unsent) return;                                                      // our pending edit will overwrite it
+  if (text === ta.value) return;
+  applyRemote(text, true);
+}
+
+function applyRemote(text, notify) {
+  const { selectionStart: s, selectionEnd: e, scrollTop } = ta;
+  ta.value = text;
+  const max = text.length;
+  ta.setSelectionRange(Math.min(s, max), Math.min(e, max));
+  ta.scrollTop = scrollTop;
+  updateStats();
+  if (notify) {
+    card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash');
+    $('#updated').textContent = t('updatedAt') + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+}
+
+function flush() {
+  clearTimeout(sendTimer);
+  if (!ws || ws.readyState !== 1 || !loaded) return;   // stays "unsent" until reconnect
+  const value = ta.value;
+  ws.send(JSON.stringify({ event_type: 'update_content', new_content: value }));
+  inflight.push(value);
+  unsent = false;
+}
+
+ta.addEventListener('input', () => {
+  unsent = true;
+  updateStats();
+  clearTimeout(sendTimer);
+  sendTimer = setTimeout(flush, 90);
+});
+
+/* ---------- stats ---------- */
+const nf = new Intl.NumberFormat(lang);
+function updateStats() {
+  const v = ta.value;
+  $('#stats').textContent = `${nf.format(v.length)} ${t('chars')} · ${nf.format(v ? v.split('\n').length : 0)} ${t('lines')}`;
+}
+
+/* ---------- clipboard ---------- */
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    try { await navigator.clipboard.writeText(text); return true; } catch {}
+  }
+  // fallback for plain http:// (VMs, LAN) where navigator.clipboard is unavailable
+  const prev = document.activeElement;
+  const tmp = document.createElement('textarea');
+  tmp.value = text; tmp.setAttribute('readonly', '');
+  tmp.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.append(tmp);
+  tmp.select(); tmp.setSelectionRange(0, text.length);
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch {}
+  tmp.remove();
+  if (prev && prev.focus) prev.focus();
+  return ok;
+}
+
+// replaces the whole buffer; goes through execCommand so Ctrl+Z keeps working
+function replaceAll(text) {
+  if (!loaded) return;
+  ta.focus(); ta.select();
+  let ok = false;
+  try { ok = text ? document.execCommand('insertText', false, text) : document.execCommand('delete'); } catch {}
+  if (!ok) { ta.value = text; ta.dispatchEvent(new Event('input', { bubbles: true })); }
+  ta.setSelectionRange(text.length, text.length);
+}
+
+let copyTimer;
+async function doCopy() {
+  const text = ta.value;
+  if (!text) return toast(t('nothing'));
+  const ok = await copyText(text);
+  if (!ok) return toast(t('copyFail'));
+  copyBtn.classList.add('done'); copyLabel.textContent = t('copied');
+  clearTimeout(copyTimer);
+  copyTimer = setTimeout(() => { copyBtn.classList.remove('done'); copyLabel.textContent = t('copy'); }, 1600);
+}
+copyBtn.addEventListener('click', doCopy);
+
+$('#clearBtn').addEventListener('click', () => {
+  const prev = ta.value;
+  if (!prev) return;
+  replaceAll('');
+  toast(t('cleared'), { label: t('undo'), run: () => replaceAll(prev) });
+});
+
+replaceToggle.checked = store.get('cp-replace', true);
+replaceToggle.addEventListener('change', () => { store.set('cp-replace', replaceToggle.checked); ta.focus(); });
+
+document.addEventListener('paste', e => {
+  if (!room || !loaded) return;
+  const text = e.clipboardData && e.clipboardData.getData('text/plain');
+  if (!text) return;
+  if (e.target === ta) {
+    if (!replaceToggle.checked || ta.selectionStart !== ta.selectionEnd) return; // normal paste
+  } else if (e.target.closest && e.target.closest('input')) return;
+  e.preventDefault();
+  replaceAll(text);
+});
+
+document.addEventListener('keydown', e => {
+  if (room && e.altKey && !e.ctrlKey && !e.metaKey && e.code === 'KeyC') { e.preventDefault(); doCopy(); }
+});
+
+/* ---------- boot ---------- */
+updateStats();
+route();
+})();
+</script>
+</body>
+</html>
