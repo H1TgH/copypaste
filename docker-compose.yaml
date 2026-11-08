@@ -1,0 +1,21 @@
+services:
+  backend_copypaste:
+    container_name: backend_copypaste
+    build:
+      context: .
+    # depends_on:
+    #   redis:
+    #     condition: service_healthy
+    command: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload" ]
+    ports:
+      - "8000:8000"
+    env_file:
+      - ".env"
+    volumes:
+      - ./src:/src
+  
+  redis:
+    container_name: redis_copypaste
+    image: redis:8.10.3-alpine
+    env_file:
+      - ".env"
